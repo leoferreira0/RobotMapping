@@ -1,0 +1,57 @@
+version: '3'
+services:
+  database-node1:
+    image: amazon/opendistro-for-elasticsearch:latest
+    container_name: database-node1
+    environment:
+      - cluster.name=database-cluster
+      - node.name=database-node1
+      - discovery.seed_hosts=database-node1
+      - cluster.initial_master_nodes=database-node1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xmx1g -Xms1g"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./data1:/usr/share/elasticsearch/data
+      - ./tls/root-ca.pem:/usr/share/elasticsearch/config/root-ca.pem
+      - ./tls/admin.pem:/usr/share/elasticsearch/config/admin.pem
+      - ./tls/admin-key.pem:/usr/share/elasticsearch/config/admin-key.pem
+      - ./internal_users.yml:/usr/share/elasticsearch/plugins/opendistro_security/securityconfig/internal_users.yml
+    ports:
+      - 9200:9200
+      - 9300:9300
+      - 9600:9600
+    expose:
+      - "9200"
+      - "9300"
+      - "9600"
+    networks:
+      - database-net
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:latest
+    container_name: database-kibana
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      ELASTICSEARCH_URL: https://database-node1:9200
+      ELASTICSEARCH_HOSTS: https://database-node1:9200
+    networks:
+      - database-net
+volumes:
+  data1:
+
+networks:
+  database-net:
+
+
+

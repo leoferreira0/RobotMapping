@@ -1,0 +1,31 @@
+FROM kalilinux/kali-rolling:latest
+
+WORKDIR /scripts
+WORKDIR /data
+
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get dist-upgrade -y
+RUN apt-get install locate -y
+RUN apt-get install wget -y
+RUN apt-get install git -y
+RUN apt-get install vim -y
+RUN apt-get install golang -y
+RUN apt-get install python3 -y
+RUN apt-get install python3-pip -y
+RUN pip3 install uuid
+RUN  go env -w GO111MODULE=auto
+RUN go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+RUN mv /root/go/bin/subfinder /usr/bin/
+RUN apt-get install sublist3r -y
+RUN go get -u github.com/tomnomnom/assetfinder
+RUN mv /root/go/bin/assetfinder /usr/bin/
+RUN go get -u github.com/openrdap/rdap/cmd/rdap
+RUN mv /root/go/bin/rdap /usr/bin/
+RUN go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+RUN mv /root/go/bin/httpx /usr/bin/
+RUN cd /opt/; git clone https://github.com/screetsec/Sudomy.git; cd Sudomy/; pip3 install -r requirements.txt
+RUN apt-get install amass -y
+
+
+
